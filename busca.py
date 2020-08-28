@@ -40,7 +40,6 @@ queuep.update(element, value) # Atualiza o valor de prioridade  de um elemento
 l = queuep.heap # Lista de elementos na fila
 e = queuep.pop()
 '''
-
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -58,43 +57,39 @@ def depthFirstSearch(problem):
     Seu algoritmo deve retornar uma lista de acoes que atinja o objetivo.
     """
     "*** YOUR CODE HERE ***"
-    # print problem.getStartState()
-    # print problem.isGoalState(problem.getStartState())
-    print problem.getSuccessors(problem.getStartState())
-
+    goalAttained = False
+    
     estadoAtual = problem.getStartState()
     filhos = problem.getSuccessors(estadoAtual)
 
-    estadosVisitados = Queue()
+    estadosVisitados = Stack()
     direcoes = Stack()
 
     estadosVisitados.push(estadoAtual)
 
-    buscaEmProfundidade(problem, filhos, estadosVisitados, direcoes)
+    buscaEmProfundidade(problem, filhos, estadosVisitados, direcoes, goalAttained)
 
-    from game import Directions
-    s = Directions.SOUTH
-    w = Directions.WEST
-    # return [s, s, w, s, w, w, s, w]
-
-    print '*'
-    print direcoes.list
     return direcoes.list
 
-def buscaEmProfundidade(problem, estados, estadosVisitados, direcoes):
+def buscaEmProfundidade(problem, estados, estadosVisitados, direcoes, goalAttained):
     for estado in estados:
-        
-        if(not problem.isGoalState(estado) and not foiVisitado(estado[0],estadosVisitados)):
-            print estado
-            estadosVisitados.push(estado[0])
-            direcoes.push(estado[1])
-            print estadosVisitados.list
-            print direcoes.list
+        if(not goalAttained):
             filhos = problem.getSuccessors(estado[0])
-            # print '*'
-            # print filhos
-            buscaEmProfundidade(problem, filhos, estadosVisitados, direcoes)
-        
+            if(not foiVisitado(estado[0],estadosVisitados)):
+                estadosVisitados.push(estado[0])
+                direcoes.push(estado[1])
+                if(not problem.isGoalState(estado[0])):
+                    goalAttained = buscaEmProfundidade(problem, filhos, estadosVisitados, direcoes, goalAttained)
+                    if(not goalAttained):
+                        direcoes.pop()
+                    else:
+                        return True
+                else:
+                    goalAttained = True
+                    return True
+        else:
+            return False
+               
 def foiVisitado(estado, fila):
     for temp in fila.list:
         if temp == estado:
