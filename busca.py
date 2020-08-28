@@ -58,10 +58,49 @@ def depthFirstSearch(problem):
     Seu algoritmo deve retornar uma lista de acoes que atinja o objetivo.
     """
     "*** YOUR CODE HERE ***"
-    print problem.getStartState()
-    print problem.isGoalState(problem.getStartState())
+    # print problem.getStartState()
+    # print problem.isGoalState(problem.getStartState())
     print problem.getSuccessors(problem.getStartState())
-    util.raiseNotDefined()
+
+    estadoAtual = problem.getStartState()
+    filhos = problem.getSuccessors(estadoAtual)
+
+    estadosVisitados = Queue()
+    direcoes = Stack()
+
+    estadosVisitados.push(estadoAtual)
+
+    buscaEmProfundidade(problem, filhos, estadosVisitados, direcoes)
+
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
+    # return [s, s, w, s, w, w, s, w]
+
+    print '*'
+    print direcoes.list
+    return direcoes.list
+
+def buscaEmProfundidade(problem, estados, estadosVisitados, direcoes):
+    for estado in estados:
+        
+        if(not problem.isGoalState(estado) and not foiVisitado(estado[0],estadosVisitados)):
+            print estado
+            estadosVisitados.push(estado[0])
+            direcoes.push(estado[1])
+            print estadosVisitados.list
+            print direcoes.list
+            filhos = problem.getSuccessors(estado[0])
+            # print '*'
+            # print filhos
+            buscaEmProfundidade(problem, filhos, estadosVisitados, direcoes)
+        
+def foiVisitado(estado, fila):
+    for temp in fila.list:
+        if temp == estado:
+            return True
+        
+    return False
 
 def breadthFirstSearch(problem):
     """Busca primeiro os nos menos profundos na arvore de busca"""
