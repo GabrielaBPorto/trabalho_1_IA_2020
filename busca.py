@@ -91,6 +91,7 @@ def buscaEmProfundidade(problem, estados, estadosVisitados, direcoes, goalAttain
                     else:
                         return True
                 else:
+                    print estado
                     goalAttained = True
                     return True
         else:
@@ -99,7 +100,7 @@ def buscaEmProfundidade(problem, estados, estadosVisitados, direcoes, goalAttain
 
 def breadthFirstSearch(problem):
     """Busca primeiro os nos menos profundos na arvore de busca"""
-    goalAttained = False
+    goalAttained = None
 
     estadoInicial = problem.getStartState()
     filhos = problem.getSuccessors(estadoInicial)
@@ -108,50 +109,63 @@ def breadthFirstSearch(problem):
     estadosVisitados = Stack()
     direcoes = Queue()
 
-    for filho in filhos:
-        estadosAVisitar.push(filho)
+    # for filho in filhos:
+        # estadosAVisitar.push(filho)
 
-    estadosVisitados.push(estadoInicial)
-
+    estadosAVisitar.push(estadoInicial)
     buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained)
 
-    temp = Stack()
     return direcoes.list
 
-def buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained):
-    print 'entrei'
-    estadoSendoVisitado = []
-    # print estadosAVisitar.list
-    for i in range(0, len(estadosAVisitar.list)):
-        if(not goalAttained):
-            print 'o estado que esta sendo visitado e '
-            estadoSendoVisitado = estadosAVisitar.pop()
-            estadosVisitados.push(estadoSendoVisitado[0])
-            print 'meow'
-            # direcoes.push(estadoSendoVisitado[1])
-            # print direcoes.list
-            if(not problem.isGoalState(estadoSendoVisitado[0])):
-                print 'oi '
-                print estadoSendoVisitado
-                filhos = problem.getSuccessors(estadoSendoVisitado[0])
-                for filho in filhos:
-                    if(not foiVisitado(filho[0],estadosVisitados)):
-                        estadosAVisitar.push(filho)
-                print estadosAVisitar.list
-                goalAttained = buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained)
-            else:
-                print'uau'
+
+def tratamentoEstadoInicial(estado, inicial):
+    if(estado != inicial):
+        return estado[0]
+    else:
+        return estado
+
+def adicionarFilhosNaoVisitadosNaListaParaVisitar(filhos, estadosVisitados, estadosAVisitar):
+    for filho in filhos:
+        if(not foiVisitado(filho[0],estadosVisitados)):
+            estadosAVisitar.push(filho)
+
+def pegaCaminhoDaBusca(goalAttained, problem, estadoSendoVisitado, direcoes):
+    if(not(goalAttained is None)):
+        vizinhos = problem.getSuccessors(goalAttained[0])
+        for vizinho in vizinhos:
+            if(vizinho[0] == estadoSendoVisitado[0]):
                 direcoes.push(estadoSendoVisitado[1])
-                print direcoes.list
-                return True
+                goalAttained = estadoSendoVisitado
+        return goalAttained
+
+def buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained):
+    for i in range(0, len(estadosAVisitar.list)):
+        if(goalAttained is None):
+
+            estadoSendoVisitado = estadosAVisitar.pop()
+
+            estadosVisitados.push(tratamentoEstadoInicial(estadoSendoVisitado, problem.getStartState()))
+
+            if(not problem.isGoalState(estadoSendoVisitado[0])):
+
+                filhos = problem.getSuccessors(tratamentoEstadoInicial(estadoSendoVisitado, problem.getStartState()))
+
+                adicionarFilhosNaoVisitadosNaListaParaVisitar(filhos, estadosVisitados, estadosAVisitar)
+                goalAttained = buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained)
+                return pegaCaminhoDaBusca(goalAttained, problem, estadoSendoVisitado,direcoes)
+            else:
+                direcoes.push(estadoSendoVisitado[1])
+                return estadoSendoVisitado
         else:
-            print 'uau 2'
-            direcoes.push(estadoSendoVisitado[1])
-            print direcoes.list
-            return True
+            # vizinhos = problem.getSuccessors(goalAttained[0])
+            # for vizinho in vizinhos:
+            #     if(vizinho[0] == estadoSendoVisitado[0]):
+            #         direcoes.push(estadoSendoVisitado[1])
+            #         goalAttained = estadoSendoVisitado
+            return goalAttained
                 
-    print 'saindo da funcao'
-    print direcoes.list
+    # print 'saindo da funcao'
+    # print direcoes.list
 
 
 def uniformCostSearch(problem):
