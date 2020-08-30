@@ -40,6 +40,13 @@ queuep.update(element, value) # Atualiza o valor de prioridade  de um elemento
 l = queuep.heap # Lista de elementos na fila
 e = queuep.pop()
 '''
+
+def foiVisitado(estado, fila):
+    for temp in fila.list:
+        if temp == estado:
+            return True
+    return False
+
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -56,16 +63,15 @@ def depthFirstSearch(problem):
 
     Seu algoritmo deve retornar uma lista de acoes que atinja o objetivo.
     """
-    "*** YOUR CODE HERE ***"
     goalAttained = False
-    
-    estadoAtual = problem.getStartState()
-    filhos = problem.getSuccessors(estadoAtual)
+
+    estadoInicial = problem.getStartState()
+    filhos = problem.getSuccessors(estadoInicial)
 
     estadosVisitados = Stack()
     direcoes = Stack()
 
-    estadosVisitados.push(estadoAtual)
+    estadosVisitados.push(estadoInicial)
 
     buscaEmProfundidade(problem, filhos, estadosVisitados, direcoes, goalAttained)
 
@@ -90,17 +96,63 @@ def buscaEmProfundidade(problem, estados, estadosVisitados, direcoes, goalAttain
         else:
             return False
                
-def foiVisitado(estado, fila):
-    for temp in fila.list:
-        if temp == estado:
-            return True
-        
-    return False
 
 def breadthFirstSearch(problem):
     """Busca primeiro os nos menos profundos na arvore de busca"""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    goalAttained = False
+
+    estadoInicial = problem.getStartState()
+    filhos = problem.getSuccessors(estadoInicial)
+
+    estadosAVisitar = Queue()
+    estadosVisitados = Stack()
+    direcoes = Queue()
+
+    for filho in filhos:
+        estadosAVisitar.push(filho)
+
+    estadosVisitados.push(estadoInicial)
+
+    buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained)
+
+    temp = Stack()
+    return direcoes.list
+
+def buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained):
+    print 'entrei'
+    estadoSendoVisitado = []
+    # print estadosAVisitar.list
+    for i in range(0, len(estadosAVisitar.list)):
+        if(not goalAttained):
+            print 'o estado que esta sendo visitado e '
+            estadoSendoVisitado = estadosAVisitar.pop()
+            estadosVisitados.push(estadoSendoVisitado[0])
+            print 'meow'
+            # direcoes.push(estadoSendoVisitado[1])
+            # print direcoes.list
+            if(not problem.isGoalState(estadoSendoVisitado[0])):
+                print 'oi '
+                print estadoSendoVisitado
+                filhos = problem.getSuccessors(estadoSendoVisitado[0])
+                for filho in filhos:
+                    if(not foiVisitado(filho[0],estadosVisitados)):
+                        estadosAVisitar.push(filho)
+                print estadosAVisitar.list
+                goalAttained = buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained)
+            else:
+                print'uau'
+                direcoes.push(estadoSendoVisitado[1])
+                print direcoes.list
+                return True
+        else:
+            print 'uau 2'
+            direcoes.push(estadoSendoVisitado[1])
+            print direcoes.list
+            return True
+                
+    print 'saindo da funcao'
+    print direcoes.list
+
 
 def uniformCostSearch(problem):
     """Busca primeiro os nos com o menor custo total"""
