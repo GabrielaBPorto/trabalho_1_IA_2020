@@ -47,6 +47,26 @@ def foiVisitado(estado, fila):
             return True
     return False
 
+def tratamentoEstadoInicial(estado, inicial):
+    if(estado != inicial):
+        return estado[0]
+    else:
+        return estado
+
+def adicionarFilhosNaoVisitadosNaListaParaVisitar(filhos, estadosVisitados, estadosAVisitar):
+    for filho in filhos:
+        if(not foiVisitado(filho[0],estadosVisitados)):
+            estadosAVisitar.push(filho)
+
+def pegaCaminhoDaBusca(goalAttained, problem, estadoSendoVisitado, direcoes):
+    if(not(goalAttained is None)):
+        vizinhos = problem.getSuccessors(goalAttained[0])
+        for vizinho in vizinhos:
+            if(vizinho[0] == estadoSendoVisitado[0]):
+                direcoes.push(estadoSendoVisitado[1])
+                goalAttained = estadoSendoVisitado
+        return goalAttained
+
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -81,17 +101,19 @@ def buscaEmProfundidade(problem, estados, estadosVisitados, direcoes, goalAttain
     for estado in estados:
         if(not goalAttained):
             filhos = problem.getSuccessors(estado[0])
+
             if(not foiVisitado(estado[0],estadosVisitados)):
                 estadosVisitados.push(estado[0])
                 direcoes.push(estado[1])
+
                 if(not problem.isGoalState(estado[0])):
                     goalAttained = buscaEmProfundidade(problem, filhos, estadosVisitados, direcoes, goalAttained)
+
                     if(not goalAttained):
                         direcoes.pop()
                     else:
                         return True
                 else:
-                    print estado
                     goalAttained = True
                     return True
         else:
@@ -109,34 +131,10 @@ def breadthFirstSearch(problem):
     estadosVisitados = Stack()
     direcoes = Queue()
 
-    # for filho in filhos:
-        # estadosAVisitar.push(filho)
-
     estadosAVisitar.push(estadoInicial)
     buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained)
 
     return direcoes.list
-
-
-def tratamentoEstadoInicial(estado, inicial):
-    if(estado != inicial):
-        return estado[0]
-    else:
-        return estado
-
-def adicionarFilhosNaoVisitadosNaListaParaVisitar(filhos, estadosVisitados, estadosAVisitar):
-    for filho in filhos:
-        if(not foiVisitado(filho[0],estadosVisitados)):
-            estadosAVisitar.push(filho)
-
-def pegaCaminhoDaBusca(goalAttained, problem, estadoSendoVisitado, direcoes):
-    if(not(goalAttained is None)):
-        vizinhos = problem.getSuccessors(goalAttained[0])
-        for vizinho in vizinhos:
-            if(vizinho[0] == estadoSendoVisitado[0]):
-                direcoes.push(estadoSendoVisitado[1])
-                goalAttained = estadoSendoVisitado
-        return goalAttained
 
 def buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAttained):
     for i in range(0, len(estadosAVisitar.list)):
@@ -157,15 +155,8 @@ def buscaEmLargura(problem, estadosAVisitar, estadosVisitados, direcoes, goalAtt
                 direcoes.push(estadoSendoVisitado[1])
                 return estadoSendoVisitado
         else:
-            # vizinhos = problem.getSuccessors(goalAttained[0])
-            # for vizinho in vizinhos:
-            #     if(vizinho[0] == estadoSendoVisitado[0]):
-            #         direcoes.push(estadoSendoVisitado[1])
-            #         goalAttained = estadoSendoVisitado
             return goalAttained
                 
-    # print 'saindo da funcao'
-    # print direcoes.list
 
 
 def uniformCostSearch(problem):
